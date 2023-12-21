@@ -1,22 +1,21 @@
 package org.example
 
 import java.io.File
-import java.math.BigDecimal
-import java.math.BigInteger
-import java.math.MathContext
-import java.math.RoundingMode
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.sqrt
 
 fun main() {
     val input = File("input.txt").readLines()
     val headerSplitRegex = """: +""".toRegex()
-    val time = input[0].split(headerSplitRegex)[1].split(""" +""".toRegex()).joinToString(separator = "").toBigInteger()
-    val distance =
-        input[1].split(headerSplitRegex)[1].split(""" +""".toRegex()).joinToString(separator = "").toBigInteger()
+    val time = input[0].split(headerSplitRegex)[1].filter(Char::isDigit).toLong()
+    val distance = input[1].split(headerSplitRegex)[1].filter(Char::isDigit).toLong()
 
-    val delta = (time * time - BigInteger("4") * distance).toBigDecimal()
-    val timeMin = (time.toBigDecimal() - delta.sqrt(MathContext.DECIMAL128)) / BigDecimal(2)
-    val timeMax = (time.toBigDecimal() + delta.sqrt(MathContext.DECIMAL128)) / BigDecimal(2)
-    val timeMaxFloor = timeMax.setScale(0, RoundingMode.FLOOR).unscaledValue()
-    val timeMinCeiling = timeMin.setScale(0, RoundingMode.CEILING).unscaledValue()
-    (timeMaxFloor - timeMinCeiling + BigInteger("1")).also(::println)
+    val delta = (time * time - 4 * distance).toDouble()
+    val timeMin = (time - sqrt(delta)) / 2
+    val timeMax = (time + sqrt(delta)) / 2
+    val maxWinningTime = if (timeMax == floor(timeMax)) (timeMax - 1) else floor(timeMax)
+    val minWinningTime = if (timeMin == ceil(timeMin)) timeMin + 1 else ceil(timeMin)
+    (maxWinningTime - minWinningTime + 1).toInt().also(::println)
+        .also { check(it == 29891250) }
 }
