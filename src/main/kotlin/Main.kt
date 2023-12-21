@@ -15,7 +15,11 @@ fun main() {
         val delta = time * time - 4 * distance
         val timeMin = (time - sqrt(delta.toFloat())) / 2
         val timeMax = (time + sqrt(delta.toFloat())) / 2
-        (floor(timeMax) - ceil(timeMin) + 1).toInt()
+
+        val minWinningTime = if (timeMin == ceil(timeMin)) timeMin + 1 else ceil(timeMin)
+        val maxWinningTime = if (timeMax == floor(timeMax)) timeMax - 1 else floor(timeMax)
+
+        (maxWinningTime - minWinningTime + 1).toInt()
     }.reduce(Int::times)
         .also(::println)
         .also { check(it == 2612736) }
