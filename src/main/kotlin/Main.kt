@@ -1,22 +1,22 @@
 package org.example
 
 import java.io.File
-import java.math.BigDecimal
-import java.math.BigInteger
-import java.math.MathContext
-import java.math.RoundingMode
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.sqrt
 
 fun main() {
     val input = File("input.txt").readLines()
     val headerSplitRegex = """: +""".toRegex()
-    val time = input[0].split(headerSplitRegex)[1].split(""" +""".toRegex()).joinToString(separator = "").toBigInteger()
-    val distance =
-        input[1].split(headerSplitRegex)[1].split(""" +""".toRegex()).joinToString(separator = "").toBigInteger()
+    val times = input[0].split(headerSplitRegex)[1].split(""" +""".toRegex()).map { it.toInt() }
+    val distances = input[1].split(headerSplitRegex)[1].split(""" +""".toRegex()).map { it.toInt() }
 
-    val delta = (time * time - BigInteger("4") * distance).toBigDecimal()
-    val timeMin = (time.toBigDecimal() - delta.sqrt(MathContext.DECIMAL128)) / BigDecimal(2)
-    val timeMax = (time.toBigDecimal() + delta.sqrt(MathContext.DECIMAL128)) / BigDecimal(2)
-    val timeMaxFloor = timeMax.setScale(0, RoundingMode.FLOOR).unscaledValue()
-    val timeMinCeiling = timeMin.setScale(0, RoundingMode.CEILING).unscaledValue()
-    (timeMaxFloor - timeMinCeiling + BigInteger("1")).also(::println)
+    times.zip(distances).map { (time, distance) ->
+        val delta = time * time - 4 * distance
+        val timeMin = (time - sqrt(delta.toFloat())) / 2
+        val timeMax = (time + sqrt(delta.toFloat())) / 2
+        (floor(timeMax) - ceil(timeMin) + 1).toInt()
+    }.reduce(Int::times)
+        .also(::println)
+        .also { check(it == 2612736) }
 }
